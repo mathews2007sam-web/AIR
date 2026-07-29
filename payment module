@@ -3,449 +3,165 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Airline Reservation — Payment</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <title>Airline Payment — UPI</title>
   <style>
     :root{
-      --bg:#0f1724;
-      --card:#0b1220;
-      --accent1:#7c3aed; /* purple */
-      --accent2:#06b6d4; /* cyan */
-      --accent3:#f59e0b; /* amber */
-      --muted:#94a3b8;
-      --glass: rgba(255,255,255,0.04);
-      --success:#10b981;
-      color-scheme: dark;
+      --bg:#071025; --card:#0b1220; --accent:#06b6d4; --muted:#9aa9bd; --success:#10b981;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg, rgba(12,18,28,1) 0%, rgba(4,8,16,1) 100%);
-      color:#e6eef8;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:32px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:24px;
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto; background:linear-gradient(180deg,#071025,#041021);
+      color:#e6eef8; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px;
     }
-
-    .container{
-      width:1100px;
-      max-width:100%;
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:28px;
-      align-items:start;
-    }
-
-    /* Left: Payment Form / Hero */
-    .left {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:14px;
-      padding:20px;
-      box-shadow: 0 6px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      overflow:hidden;
-    }
-
-    .hero {
-      display:flex;
-      gap:16px;
-      align-items:center;
-    }
-    .hero img{
-      width:140px;
-      height:90px;
-      object-fit:cover;
-      border-radius:10px;
-      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-      flex-shrink:0;
-    }
-    .hero h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing: -0.2px;
-    }
-    .hero p{margin:6px 0 0; color:var(--muted); font-size:13px}
-
-    form{margin-top:18px; display:flex; gap:18px; flex-direction:column}
-
-    .card {
-      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(6,182,212,0.06));
-      border-radius:12px;
-      padding:14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-    }
-    .card .left-info{min-width:0}
-    .card .flight{font-weight:700}
-    .card .route{color:var(--muted); font-size:13px}
-    .price{font-size:20px; font-weight:700; color:var(--accent2)}
-
-    .field-row{display:flex; gap:12px}
-    .field{flex:1; display:flex; flex-direction:column; gap:6px}
+    .wrap{width:980px; max-width:100%; display:grid; grid-template-columns:1fr 300px; gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent); padding:16px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    h1{margin:0 0 8px; font-size:18px}
+    .hero{display:flex; gap:12px; align-items:center}
+    .hero img{width:110px; height:70px; object-fit:cover; border-radius:8px}
+    form{margin-top:12px; display:flex; flex-direction:column; gap:10px}
     label{font-size:13px; color:var(--muted)}
-    input, select{
-      background:var(--glass);
-      border:1px solid rgba(255,255,255,0.04);
-      color:inherit;
-      padding:12px 14px;
-      border-radius:8px;
-      outline:none;
-      font-size:14px;
-    }
-    input:focus{box-shadow:0 6px 20px rgba(99,102,241,0.12); border-color:rgba(124,58,237,0.6)}
-    .small{font-size:13px; color:var(--muted)}
-
-    .payment-methods{display:flex; gap:8px; margin-top:6px}
-    .pm{
-      display:flex; gap:8px; align-items:center;
-      padding:8px 10px; border-radius:8px; background:rgba(0,0,0,0.15); cursor:pointer;
-      border:1px solid rgba(255,255,255,0.02)
-    }
-    .pm svg{width:36px;height:24px}
-
-    .row-between{display:flex; justify-content:space-between; align-items:center}
-    .btn{
-      background: linear-gradient(90deg,var(--accent1),var(--accent2));
-      padding:12px 18px;
-      color:white; border:none; border-radius:10px; cursor:pointer; font-weight:700;
-      box-shadow: 0 8px 24px rgba(6,182,212,0.08);
-    }
-    .btn:active{transform:translateY(1px)}
-
-    .muted{color:var(--muted)}
-
-    /* Right: Summary */
-    .right{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:14px;
-      padding:18px;
-      min-width:300px;
-      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
-    }
-    .summary h3{margin:0 0 10px}
-    .flight-item{display:flex; gap:12px; align-items:center; margin-bottom:12px}
-    .flight-item img{width:64px;height:44px; object-fit:cover; border-radius:8px}
-    .meta{flex:1}
-    .meta .fromto{font-weight:700}
-    .meta .time{color:var(--muted); font-size:13px}
-
-    .total{display:flex; justify-content:space-between; padding:12px; border-radius:10px;
-      background:linear-gradient(90deg, rgba(124,58,237,0.06), rgba(6,182,212,0.03)); margin-top:12px; align-items:center}
-    .coupon{display:flex; gap:8px; margin-top:10px}
-    .coupon input{flex:1}
-
-    /* validation */
-    .error{color:#ff6b6b; font-size:13px; margin-top:6px}
-
-    /* success modal */
-    .overlay{
-      position:fixed; inset:0; background:rgba(2,6,23,0.6); display:none; align-items:center; justify-content:center; z-index:50;
-    }
-    .success{
-      width:420px; max-width:94%; background:linear-gradient(180deg,#071022 0%, #0b1220 100%); padding:28px; border-radius:14px; text-align:center;
-      box-shadow: 0 12px 40px rgba(4,10,25,0.8);
-    }
-    .check{
-      width:88px; height:88px; border-radius:50%; display:inline-grid; place-items:center; margin:0 auto 12px;
-      background:linear-gradient(90deg,var(--accent2),var(--success)); box-shadow: 0 8px 24px rgba(16,185,129,0.12);
-    }
-    .success h2{margin:6px 0 0}
-    .success p{color:var(--muted); margin-top:6px; font-size:14px}
-
-    @media (max-width:980px){
-      .container{grid-template-columns:1fr; padding:12px}
-      .right{order:2}
-      .left{order:1}
-    }
+    input{background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:8px; color:inherit; font-size:14px}
+    .row{display:flex; gap:8px}
+    .row .col{flex:1}
+    .btn{background:linear-gradient(90deg,#7c3aed,var(--accent)); color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700}
+    .muted{color:var(--muted); font-size:13px}
+    .error{color:#ff8b8b; font-size:13px; display:none}
+    .overlay{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(2,6,23,0.6); z-index:50}
+    .ok{background:linear-gradient(180deg,#071022,#0b1220); color:#e6eef8; padding:22px; border-radius:12px; text-align:center; min-width:300px; box-shadow:0 12px 40px rgba(0,0,0,0.7)}
+    .qr{width:160px; height:160px; background:#0f1724; border-radius:8px; display:grid; place-items:center; color:var(--muted); font-size:12px}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="container" role="main">
-    <section class="left" aria-labelledby="payment-heading">
+  <div class="wrap" role="main">
+    <section class="card" aria-labelledby="pay">
       <div class="hero">
-        <img src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=1400&q=80" alt="Plane flying over sunset">
+        <img src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=800&q=60" alt="plane">
         <div>
-          <h1 id="payment-heading">Secure Payment</h1>
-          <p>Complete your booking — fast, secure, and PCI-compliant (demo UI only).</p>
-          <div style="margin-top:10px; font-size:13px;" class="muted">Reservation for <strong>Billu 1241</strong> • Flight #AB123</div>
+          <h1 id="pay">UPI Payment (Simple Demo)</h1>
+          <div class="muted">Flight: JFK → LHR • Amount: ₹749</div>
         </div>
       </div>
 
-      <form id="paymentForm" novalidate>
-        <div class="card" aria-hidden="true">
-          <div class="left-info">
-            <div class="flight">New York — London</div>
-            <div class="route">Nonstop • Economy • 1 Passenger</div>
-          </div>
-          <div class="price">$749.00</div>
+      <form id="f" autocomplete="off" novalidate>
+        <div>
+          <label for="name">Name</label>
+          <input id="name" required placeholder="Full name">
         </div>
 
         <div>
-          <label class="small">Payment Method</label>
-          <div class="payment-methods" role="tablist" aria-label="Payment methods">
-            <div class="pm" data-method="card" tabindex="0" aria-selected="true">
-              <!-- Visa SVG -->
-              <svg viewBox="0 0 48 32" aria-hidden="true"><rect width="48" height="32" rx="4" fill="#1A1F36"/><text x="6" y="21" fill="#fff" font-weight="700" font-size="10">VISA</text></svg>
-              <div class="muted small">Credit / Debit Card</div>
-            </div>
-            <div class="pm" data-method="paypal" tabindex="0">
-              <svg viewBox="0 0 48 32" aria-hidden="true"><rect width="48" height="32" rx="4" fill="#183B5E"/><text x="6" y="21" fill="#fff" font-weight="700" font-size="9">PayPal</text></svg>
-              <div class="muted small">PayPal</div>
-            </div>
-            <div class="pm" data-method="apple" tabindex="0">
-              <svg viewBox="0 0 48 32" aria-hidden="true"><rect width="48" height="32" rx="4" fill="#111827"/><text x="6" y="21" fill="#fff" font-weight="700" font-size="9">Apple Pay</text></svg>
-              <div class="muted small">Apple Pay</div>
-            </div>
+          <label for="email">Email</label>
+          <input id="email" type="email" required placeholder="you@example.com">
+        </div>
+
+        <div>
+          <label for="upi">UPI ID (VPA) or 10-digit mobile</label>
+          <input id="upi" required placeholder="example@bank or 9876543210">
+          <div id="upiErr" class="error">Enter a valid UPI ID (contains @) or a 10-digit mobile number.</div>
+        </div>
+
+        <div class="row" style="align-items:center;">
+          <div>
+            <label>Amount</label>
+            <div style="font-weight:700; font-size:18px; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px">₹749</div>
+          </div>
+          <div style="margin-left:auto; display:flex; flex-direction:column; gap:6px">
+            <label style="visibility:hidden">pay</label>
+            <button class="btn" id="payBtn" type="submit">Pay ₹749 via UPI</button>
           </div>
         </div>
 
-        <fieldset style="border:none;padding:0;margin:0" aria-live="polite">
-          <div class="field-row" style="margin-top:6px">
-            <div class="field">
-              <label for="cardName">Name on card</label>
-              <input id="cardName" name="cardName" autocomplete="cc-name" required placeholder="Full name as on card">
-            </div>
-            <div class="field">
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="cardNumber">Card number</label>
-            <input id="cardNumber" name="cardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 5678 9012 3456" required>
-            <div id="cardError" class="error" hidden></div>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="exp">Expiry</label>
-              <input id="exp" name="exp" placeholder="MM / YY" maxlength="7" required>
-            </div>
-            <div class="field">
-              <label for="cvc">CVC</label>
-              <input id="cvc" name="cvc" inputmode="numeric" maxlength="4" placeholder="123" required>
-            </div>
-          </div>
-        </fieldset>
-
-        <div class="row-between" style="align-items:center">
-          <div class="muted small">Billing address (optional)</div>
-          <div style="display:flex; gap:10px; align-items:center">
-            <label class="small muted" for="save">Save card</label>
-            <input id="save" name="save" type="checkbox" aria-label="Save card for future bookings">
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="address">Street address</label>
-            <input id="address" name="address" placeholder="123 Main St">
-          </div>
-          <div class="field">
-            <label for="zip">ZIP / Postal</label>
-            <input id="zip" name="zip" placeholder="10001">
-          </div>
-        </div>
-
-        <div style="display:flex; gap:12px; align-items:center; margin-top:6px">
-          <button type="submit" class="btn" id="payBtn">Pay $749.00</button>
-          <div class="muted small">Secure • Encrypted • Demo</div>
-        </div>
-        <div id="formMessage" class="error" role="status" aria-live="polite"></div>
+        <div class="muted" style="margin-top:6px">This is a demo UI — no real money is transferred.</div>
       </form>
     </section>
 
-    <aside class="right" aria-labelledby="summary-heading">
-      <div class="summary">
-        <h3 id="summary-heading">Booking Summary</h3>
-        <div class="flight-item">
-          <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c0?auto=format&fit=crop&w=600&q=60" alt="Airport scene">
-          <div class="meta">
-            <div class="fromto">JFK → LHR</div>
-            <div class="time">Departs: Jul 30, 2026 • 19:20 • 7h 0m</div>
-          </div>
-          <div class="muted">$749</div>
-        </div>
-
-        <div style="display:flex; gap:8px; margin-top:6px; flex-direction:column">
-          <div class="small muted">Passengers</div>
-          <div>1 Adult • Economy</div>
-        </div>
-
-        <div class="coupon">
-          <input id="coupon" placeholder="Coupon code (e.g., SUMMER50)">
-          <button class="btn" id="applyCoupon" style="background:linear-gradient(90deg,var(--accent3),var(--accent2)); padding:10px 12px">Apply</button>
-        </div>
-
-        <div class="total" style="margin-top:10px">
-          <div>
-            <div class="muted small">Total (incl. taxes)</div>
-            <div style="font-weight:700; font-size:18px">$749.00</div>
-          </div>
-          <div style="text-align:right">
-            <div class="small muted">Payment</div>
-            <div class="muted">Card ending • 3456</div>
-          </div>
-        </div>
-
-        <div style="margin-top:14px; color:var(--muted); font-size:13px">
-          Need help? Contact support at <a href="mailto:support@example.com" style="color:var(--accent2)">support@example.com</a>
-        </div>
-      </div>
+    <aside class="card" aria-labelledby="summary">
+      <h2 id="summary" style="margin-top:0">Booking Summary</h2>
+      <div class="muted">Passenger</div>
+      <div style="margin:8px 0 16px">1 Adult • Economy</div>
+      <div class="muted">Total</div>
+      <div style="font-weight:700;font-size:20px;margin-top:6px">₹749</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--muted)">Help: <a href="mailto:support@example.com" style="color:var(--accent)">support@example.com</a></div>
     </aside>
   </div>
 
-  <!-- Success overlay -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="success" role="document">
-      <div class="check" aria-hidden="true">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6L9 17l-5-5"></path>
-        </svg>
+  <!-- Success / UPI QR overlay -->
+  <div class="overlay" id="overlay" role="dialog" aria-hidden="true">
+    <div class="ok" role="document">
+      <div id="okIcon" style="font-size:36px;margin-bottom:6px">✓</div>
+      <div id="okTitle" style="font-weight:700">UPI Payment Request Sent</div>
+      <div id="okText" class="muted" style="margin-top:8px">We sent a payment request to your UPI app. Confirm to complete booking.</div>
+
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px; align-items:center">
+        <div class="qr" id="qr">QR / UPI</div>
       </div>
-      <h2>Payment Confirmed</h2>
-      <p>Your booking is confirmed. A receipt has been sent to your email. Safe travels!</p>
-      <div style="margin-top:16px">
-        <button class="btn" id="closeSuccess">Back to dashboard</button>
+
+      <div style="margin-top:14px; display:flex; gap:8px; justify-content:center">
+        <button class="btn" id="closeSuccess">Close</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Utility: format card number with spaces
-    function formatCardNumber(value){
-      return value.replace(/\D/g,'').substring(0,16).replace(/(\d{4})(?=\d)/g,'$1 ');
-    }
-    // Luhn check for basic card validation (client-side only)
-    function luhnCheck(num){
-      const digits = num.replace(/\D/g,'').split('').reverse().map(d=>parseInt(d,10));
-      let sum = 0;
-      for(let i=0;i<digits.length;i++){
-        let d = digits[i];
-        if(i % 2 === 1){
-          d *= 2;
-          if(d > 9) d -= 9;
-        }
-        sum += d;
-      }
-      return digits.length >= 12 && sum % 10 === 0;
-    }
-
-    const cardNumberInput = document.getElementById('cardNumber');
-    const expInput = document.getElementById('exp');
-    const cvcInput = document.getElementById('cvc');
-    const cardError = document.getElementById('cardError');
-    const formMessage = document.getElementById('formMessage');
+    const form = document.getElementById('f');
+    const upiInput = document.getElementById('upi');
+    const upiErr = document.getElementById('upiErr');
     const overlay = document.getElementById('overlay');
+    const okText = document.getElementById('okText');
+    const qrBox = document.getElementById('qr');
     const payBtn = document.getElementById('payBtn');
 
-    // Bind formatting events
-    cardNumberInput.addEventListener('input', e=>{
-      const start = cardNumberInput.selectionStart;
-      cardNumberInput.value = formatCardNumber(cardNumberInput.value);
-      // crude caret repositioning
-      cardNumberInput.selectionStart = cardNumberInput.selectionEnd = start;
-      cardError.hidden = true;
-      formMessage.textContent = '';
-    });
+    // Simple UPI validation: either contains "@" (vpa) or exactly 10 digits (mobile)
+    function validUpi(v){
+      v = (v||'').trim();
+      if(!v) return false;
+      if(/\d{10}$/.test(v) && v.length===10) return true;
+      if(v.includes('@') && /^[^\s@]+@[a-zA-Z0-9._-]+$/.test(v)) return true;
+      return false;
+    }
 
-    expInput.addEventListener('input', e=>{
-      let v = expInput.value.replace(/\D/g,'').substring(0,4);
-      if(v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
-      expInput.value = v;
-    });
-
-    cvcInput.addEventListener('input', e=>{
-      cvcInput.value = cvcInput.value.replace(/\D/g,'').substring(0,4);
-    });
-
-    // Payment method selection (visual)
-    document.querySelectorAll('.pm').forEach(pm=>{
-      pm.addEventListener('click', ()=> {
-        document.querySelectorAll('.pm').forEach(x=>x.setAttribute('aria-selected','false'));
-        pm.setAttribute('aria-selected','true');
-      });
-      pm.addEventListener('keydown', (ev)=>{
-        if(ev.key === 'Enter' || ev.key === ' ') pm.click();
-      });
-    });
-
-    // Coupon apply demo
-    document.getElementById('applyCoupon').addEventListener('click', ()=>{
-      const c = document.getElementById('coupon').value.trim().toUpperCase();
-      if(!c){ alert('Enter a coupon code'); return; }
-      if(c === 'SUMMER50'){
-        alert('Coupon applied: $50 off (demo). You saved $50!');
-      } else {
-        alert('Coupon not valid for this demo.');
-      }
-    });
-
-    // Form submit handler (demo)
-    document.getElementById('paymentForm').addEventListener('submit', async (e)=>{
+    form.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      formMessage.textContent = '';
+      upiErr.style.display = 'none';
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const upi = upiInput.value.trim();
+
+      if(!name || !email || !upi){
+        upiErr.textContent = 'Please fill all fields.';
+        upiErr.style.display = 'block';
+        return;
+      }
+      if(!validUpi(upi)){
+        upiErr.textContent = 'Enter a valid UPI ID (contains @) or 10-digit mobile.';
+        upiErr.style.display = 'block';
+        return;
+      }
+
+      // Demo: show processing & overlay with message
       payBtn.disabled = true;
       payBtn.textContent = 'Processing...';
 
-      const cardNum = cardNumberInput.value.replace(/\s/g,'');
-      const name = document.getElementById('cardName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const exp = expInput.value.trim();
-      const cvc = cvcInput.value.trim();
+      // Simulate creating a UPI request/QR
+      await new Promise(r=>setTimeout(r,900));
 
-      // Simple validations
-      if(!name || !email || !cardNum || !exp || !cvc){
-        formMessage.textContent = 'Please fill in all required fields.';
-        payBtn.disabled = false;
-        payBtn.textContent = 'Pay $749.00';
-        return;
-      }
-      if(!luhnCheck(cardNum)){
-        cardError.hidden = false;
-        cardError.textContent = 'Invalid card number (client-side check).';
-        payBtn.disabled = false;
-        payBtn.textContent = 'Pay $749.00';
-        return;
-      }
-      // expiry basic parse
-      const parts = exp.split('/');
-      if(parts.length < 1 || parts[0].trim().length === 0){
-        formMessage.textContent = 'Enter a valid expiry date.';
-        payBtn.disabled = false;
-        payBtn.textContent = 'Pay $749.00';
-        return;
-      }
-
-      // Demo fake processing delay
-      await new Promise(r => setTimeout(r, 1300));
-
-      // Show success overlay
+      // Show overlay with custom message
+      okText.textContent = 'A payment request has been sent to ' + upi + '. Open your UPI app to approve.';
+      qrBox.textContent = 'UPI: ' + upi;
       overlay.style.display = 'flex';
       overlay.setAttribute('aria-hidden','false');
 
-      // Reset button
       payBtn.disabled = false;
-      payBtn.textContent = 'Pay $749.00';
+      payBtn.textContent = 'Pay ₹749 via UPI';
     });
 
-    // Close success
     document.getElementById('closeSuccess').addEventListener('click', ()=>{
       overlay.style.display = 'none';
       overlay.setAttribute('aria-hidden','true');
-      // In real app you might redirect to bookings page:
-      // window.location.href = '/bookings';
+      // In a real app, redirect to bookings or show receipt
     });
 
-    // Close overlay on ESC
+    // Close on ESC
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape' && overlay.style.display === 'flex'){
         overlay.style.display = 'none';
