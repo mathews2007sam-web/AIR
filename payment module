@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Airline Payment — UPI</title>
+  <style>
+    :root{
+      --bg:#071025; --card:#0b1220; --accent:#06b6d4; --muted:#9aa9bd; --success:#10b981;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto; background:linear-gradient(180deg,#071025,#041021);
+      color:#e6eef8; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px;
+    }
+    .wrap{width:980px; max-width:100%; display:grid; grid-template-columns:1fr 300px; gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent); padding:16px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    h1{margin:0 0 8px; font-size:18px}
+    .hero{display:flex; gap:12px; align-items:center}
+    .hero img{width:110px; height:70px; object-fit:cover; border-radius:8px}
+    form{margin-top:12px; display:flex; flex-direction:column; gap:10px}
+    label{font-size:13px; color:var(--muted)}
+    input{background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:8px; color:inherit; font-size:14px}
+    .row{display:flex; gap:8px}
+    .row .col{flex:1}
+    .btn{background:linear-gradient(90deg,#7c3aed,var(--accent)); color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700}
+    .muted{color:var(--muted); font-size:13px}
+    .error{color:#ff8b8b; font-size:13px; display:none}
+    .overlay{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(2,6,23,0.6); z-index:50}
+    .ok{background:linear-gradient(180deg,#071022,#0b1220); color:#e6eef8; padding:22px; border-radius:12px; text-align:center; min-width:300px; box-shadow:0 12px 40px rgba(0,0,0,0.7)}
+    .qr{width:160px; height:160px; background:#0f1724; border-radius:8px; display:grid; place-items:center; color:var(--muted); font-size:12px}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <section class="card" aria-labelledby="pay">
+      <div class="hero">
+        <img src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=800&q=60" alt="plane">
+        <div>
+          <h1 id="pay">UPI Payment (Simple Demo)</h1>
+          <div class="muted">Flight: JFK → LHR • Amount: ₹749</div>
+        </div>
+      </div>
+
+      <form id="f" autocomplete="off" novalidate>
+        <div>
+          <label for="name">Name</label>
+          <input id="name" required placeholder="Full name">
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" required placeholder="you@example.com">
+        </div>
+
+        <div>
+          <label for="upi">UPI ID (VPA) or 10-digit mobile</label>
+          <input id="upi" required placeholder="example@bank or 9876543210">
+          <div id="upiErr" class="error">Enter a valid UPI ID (contains @) or a 10-digit mobile number.</div>
+        </div>
+
+        <div class="row" style="align-items:center;">
+          <div>
+            <label>Amount</label>
+            <div style="font-weight:700; font-size:18px; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px">₹749</div>
+          </div>
+          <div style="margin-left:auto; display:flex; flex-direction:column; gap:6px">
+            <label style="visibility:hidden">pay</label>
+            <button class="btn" id="payBtn" type="submit">Pay ₹749 via UPI</button>
+          </div>
+        </div>
+
+        <div class="muted" style="margin-top:6px">This is a demo UI — no real money is transferred.</div>
+      </form>
+    </section>
+
+    <aside class="card" aria-labelledby="summary">
+      <h2 id="summary" style="margin-top:0">Booking Summary</h2>
+      <div class="muted">Passenger</div>
+      <div style="margin:8px 0 16px">1 Adult • Economy</div>
+      <div class="muted">Total</div>
+      <div style="font-weight:700;font-size:20px;margin-top:6px">₹749</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--muted)">Help: <a href="mailto:support@example.com" style="color:var(--accent)">support@example.com</a></div>
+    </aside>
+  </div>
+
+  <!-- Success / UPI QR overlay -->
+  <div class="overlay" id="overlay" role="dialog" aria-hidden="true">
+    <div class="ok" role="document">
+      <div id="okIcon" style="font-size:36px;margin-bottom:6px">✓</div>
+      <div id="okTitle" style="font-weight:700">UPI Payment Request Sent</div>
+      <div id="okText" class="muted" style="margin-top:8px">We sent a payment request to your UPI app. Confirm to complete booking.</div>
+
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px; align-items:center">
+        <div class="qr" id="qr">QR / UPI</div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; gap:8px; justify-content:center">
+        <button class="btn" id="closeSuccess">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('f');
+    const upiInput = document.getElementById('upi');
+    const upiErr = document.getElementById('upiErr');
+    const overlay = document.getElementById('overlay');
+    const okText = document.getElementById('okText');
+    const qrBox = document.getElementById('qr');
+    const payBtn = document.getElementById('payBtn');
+
+    // Simple UPI validation: either contains "@" (vpa) or exactly 10 digits (mobile)
+    function validUpi(v){
+      v = (v||'').trim();
+      if(!v) return false;
+      if(/\d{10}$/.test(v) && v.length===10) return true;
+      if(v.includes('@') && /^[^\s@]+@[a-zA-Z0-9._-]+$/.test(v)) return true;
+      return false;
+    }
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      upiErr.style.display = 'none';
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const upi = upiInput.value.trim();
+
+      if(!name || !email || !upi){
+        upiErr.textContent = 'Please fill all fields.';
+        upiErr.style.display = 'block';
+        return;
+      }
+      if(!validUpi(upi)){
+        upiErr.textContent = 'Enter a valid UPI ID (contains @) or 10-digit mobile.';
+        upiErr.style.display = 'block';
+        return;
+      }
+
+      // Demo: show processing & overlay with message
+      payBtn.disabled = true;
+      payBtn.textContent = 'Processing...';
+
+      // Simulate creating a UPI request/QR
+      await new Promise(r=>setTimeout(r,900));
+
+      // Show overlay with custom message
+      okText.textContent = 'A payment request has been sent to ' + upi + '. Open your UPI app to approve.';
+      qrBox.textContent = 'UPI: ' + upi;
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden','false');
+
+      payBtn.disabled = false;
+      payBtn.textContent = 'Pay ₹749 via UPI';
+    });
+
+    document.getElementById('closeSuccess').addEventListener('click', ()=>{
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden','true');
+      // In a real app, redirect to bookings or show receipt
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && overlay.style.display === 'flex'){
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+      }
+    });
+  </script>
+</body>
+</html>
