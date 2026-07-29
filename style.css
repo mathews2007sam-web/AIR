@@ -1,0 +1,142 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0b3d91, #1e6fd9);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.payment-wrapper {
+  width: 100%;
+  max-width: 440px;
+}
+
+.payment-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 32px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+h1 {
+  font-size: 22px;
+  color: #0b3d91;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.amount-box {
+  background: #f2f6fc;
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.amount-box .amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0b3d91;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: #333;
+  margin: 12px 0 6px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d7e2;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input:focus, select:focus {
+  border-color: #1e6fd9;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row > div {
+  flex: 1;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+button#payButton {
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px;
+  background: #0b3d91;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+button#payButton:hover {
+  background: #092e6e;
+}
+
+.status-message {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.status-message.success {
+  background: #e3f7e8;
+  color: #1c7a34;
+}
+
+.status-message.error {
+  background: #fbe4e4;
+  color: #a52b2b;
+}
+
+.status-message.pending {
+  background: #fff6e0;
+  color: #8a6400;
+}
