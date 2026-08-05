@@ -913,7 +913,7 @@ document.getElementById("cancelSeatBtn").addEventListener("click", () => {
   const cls = document.getElementById("invClassSelect").value;
   if (!flightId) { alert("Select a flight first."); return; }
   const inv = state.inventory[flightId][cls];
-  if (inv.booked <= 0) { alert("No booked seats to cancel in this class."); return; }
+  if (inv.booked <= 0) { alert("No BOoked seats to cancel in this class."); return; }
   inv.booked -= 1;
   pushLog(`Booking cancelled: ${cls} on ${getFlight(flightId).flightNumber}. Seat released to inventory.`);
   renderAll();
@@ -1025,5 +1025,5 @@ seedFlights();
 renderAll();
 pushLog("System initialized. Inventory synchronized across all modules.");
 </script>
-
+</body>
 </html>
