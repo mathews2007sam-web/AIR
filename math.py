@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import math
 
 def get_factorial_built_in(n):
@@ -5,4 +6,23 @@ def get_factorial_built_in(n):
         raise ValueError("Factorial is Not defined for negative numbers.")
     return math.factorial(n)
 
+=======
+<<<<<<< HEAD
+import math
+
+def get_factorial_built_in(n):
+    if n < 0:
+        raise ValueError("factorial is Not defined for negative numbers.")
+    return math.factorial(n)
+
+=======
+import math
+
+def get_factorial_built_in(n):
+    if n < 0:
+        raise ValueError("factorial is Not defined for negative numbers.")
+    return math.factorial(n)
+
+>>>>>>> 1a2815a4ebdfaeee7b9499b1d421a0fda3923d8c
+>>>>>>> 0c9b60b80dd67d13ffc8163e5a7a5615af1bb36c
 print(get_factorial_built_in(5)) 
